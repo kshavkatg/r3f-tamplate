@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { PerspectiveCamera } from '@react-three/drei'
+import { OrbitControls } from '@react-three/drei'
 
 export default function Camera(props) {
   const ref = useRef()
@@ -9,5 +10,7 @@ export default function Camera(props) {
   useEffect(() => setDefaultCamera({ camera: ref.current }), []);
   // Update it every frame
   useFrame(() => ref.current.updateMatrixWorld())
-  return <PerspectiveCamera ref={ref} {...props} />
+  return (
+      <PerspectiveCamera ref={ref} {...props} />
+    )
 }

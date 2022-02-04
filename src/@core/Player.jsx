@@ -1,4 +1,4 @@
-import { Suspense, useRef, useState, useEffect } from 'react'
+import { Suspense, useRef, useState, useEffect, useCallback } from 'react'
 import { useFrame } from '@react-three/fiber'
 import RobotExpressive from '../enteties/RobotExspressive'
 import Camera from './Camera'
@@ -10,12 +10,13 @@ export default function Player() {
   const [moveRight, setMoveRight] = useState(false)
   const [rotateRight, setRotateRight] = useState(false)
   const [rotateLeft, setRotateLeft] = useState(false)
+  const [action, setAction] = useState("Idle")
 
   const playerRef = useRef()
   const cameraRef = useRef()
   const avatarRef = useRef()
 
-  const playerSpeed = 0.1
+  const playerSpeed = 0.05
 
   const handleKeyPress = (e) => {
     switch (e.code) {
@@ -42,7 +43,7 @@ export default function Player() {
     }
   }
 
-  const handleKeyUp = (e) => {
+  const handleKeyUp = useCallback((e) => {
     switch (e.code) {
       case 'KeyW':
         setMoveForward(false)
@@ -65,7 +66,7 @@ export default function Player() {
       default:
         break;
     }
-  }
+  }, [])
 
   useEffect(()=> {
     document.addEventListener('keypress', handleKeyPress)
@@ -74,15 +75,18 @@ export default function Player() {
 
   useFrame((state) => {
     if (moveForward){
+      action === "Idle" && setAction('Walking')
       avatarRef.current.rotation.copy(cameraRef.current.rotation)
       playerRef.current.translateZ(-playerSpeed)
     } 
     if (moveBack){
+      action === "Idle" && setAction('Walking')
       avatarRef.current.rotation.copy(cameraRef.current.rotation)
       avatarRef.current.rotation.y -= -Math.PI 
       playerRef.current.translateZ(playerSpeed)
     }
     if (moveLeft) {
+      action === "Idle" && setAction('Walking')
       avatarRef.current.rotation.copy(cameraRef.current.rotation)
       if (moveForward) {
         avatarRef.current.rotation.y += Math.PI /4
@@ -94,6 +98,7 @@ export default function Player() {
       playerRef.current.translateX(-playerSpeed)
     }
     if (moveRight) {
+      action === "Idle" && setAction('Walking')
       avatarRef.current.rotation.copy(cameraRef.current.rotation)
       if (moveForward) {
         avatarRef.current.rotation.y -= Math.PI /4
@@ -112,6 +117,8 @@ export default function Player() {
       avatarRef.current.rotation.y += playerSpeed * 0.3;
       playerRef.current.rotation.y -= playerSpeed * 0.3;
     }
+    if (!moveBack && !moveForward && !moveRight && !moveLeft) setAction("Idle")
+    
   });
 
   return (
@@ -122,7 +129,7 @@ export default function Player() {
       </group>
       <group ref={avatarRef}>
         <Suspense fallback={null}>
-          <RobotExpressive rotation={[0, Math.PI, 0]} position={[0, 0, 0]}  scale={0.5} />
+          <RobotExpressive action={action} rotation={[0, Math.PI, 0]} position={[0, 0, 0]}  scale={0.5} />
         </Suspense>
       </group> 
     </group> 
