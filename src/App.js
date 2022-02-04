@@ -1,25 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import { Canvas } from '@react-three/fiber'
+import Player from './@core/Player'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div id="canvas-container">
+      <Canvas>
+          <ambientLight intensity={0.2} />
+          <directionalLight color="white" position={[0, 0, 5]} />
+          <axesHelper position={[0, 0, 0]} args={[4, 1, 1]} />
+          <gridHelper args={[100, 100, 100]} />
+          <Player />
+      </Canvas>
     </div>
-  );
+  )
 }
 
 export default App;
